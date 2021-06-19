@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dal.testdb.auto.mapper.TestTableDOMapper">
+    <!-- 自动生成,请修改 MY_TEST_TABLE.xml -->
+    <resultMap id="BaseResultMap"  type="dal.testdb.auto.dataobject.TestTableDO">
+        <id column="ID" property="id" jdbcType="INTEGER" javaType="Integer" />
+        <result column="LONGID" property="longid" jdbcType="BIGINT" javaType="Long" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" javaType="String" />
+        <result column="AGE" property="age" jdbcType="INTEGER" javaType="Integer" />
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.LONGID,sf.NAME,sf.AGE
+    </sql>
+    <sql id="Base_Column_List">
+        ID,LONGID,NAME,AGE
+    </sql>
+
+
+    <!--插入表:my_test_table  自动生成，请勿修改-->
+    <insert id="insert"  >
+            <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+                SELECT
+                LAST_INSERT_ID()
+            </selectKey>
+            <![CDATA[
+            INSERT INTO my_test_table(
+                    ID
+                    ,LONGID
+                    ,NAME
+                    ,AGE
+            )VALUES(
+                     null
+                    , #{longid,jdbcType=BIGINT}
+                    , #{name,jdbcType=VARCHAR}
+                    , #{age,jdbcType=INTEGER}
+            )
+            ]]>
+    </insert>
+
+    <!--批量插入表:my_test_table  自动生成，请勿修改-->
+    <insert id="insertBatch"  >
+            INSERT INTO my_test_table(
+                    ID
+                    ,LONGID
+                    ,NAME
+                    ,AGE
+            )VALUES
+            <foreach collection="list"  item="item" separator=",">
+                (
+                     null
+                    , #{item.longid,jdbcType=BIGINT}
+                    , #{item.name,jdbcType=VARCHAR}
+                    , #{item.age,jdbcType=INTEGER}
+                )
+            </foreach>
+    </insert>
+
+    <!--更新表:my_test_table  自动生成，请勿修改-->
+    <update id="update"  >
+        <![CDATA[
+        UPDATE my_test_table
+        SET
+                    LONGID          = #{longid,jdbcType=BIGINT}
+                    ,NAME            = #{name,jdbcType=VARCHAR}
+                    ,AGE             = #{age,jdbcType=INTEGER}
+        WHERE
+                ID              = #{id,jdbcType=INTEGER}
+        ]]>
+    </update>
+
+    <!--根据主键删除数据:my_test_table  自动生成，请勿修改-->
+    <delete id="deleteById"  >
+        <![CDATA[
+        DELETE /*MS-MY-TEST-TABLE-DELETEBYID*/ FROM my_test_table
+        WHERE
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </delete>
+
+    <!--根据主键获取数据:my_test_table  自动生成，请勿修改-->
+    <select id="getById" resultMap="BaseResultMap" >
+        SELECT /*MS-MY-TEST-TABLE-GETBYID*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </select>
+
+    <!--查询多条  自动生成，请勿修改-->
+    <select id="selectList" resultMap="BaseResultMap" >
+        SELECT /*MS-MY-TEST-TABLE-SELECTLIST*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        WHERE
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </select>
+
+    <!--查询结果多条并转为Map  自动生成，请勿修改-->
+    <select id="selectListToMap" resultMap="BaseResultMap" >
+        SELECT /*MS-MY-TEST-TABLE-SELECTLISTTOMAP*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </select>
+
+    <!--查询结果多条并转为MapList  自动生成，请勿修改-->
+    <select id="selectListForMapList" resultMap="BaseResultMap" >
+        SELECT /*MS-MY-TEST-TABLE-SELECTLISTFORMAPLIST*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </select>
+
+    <!--查询结果多条并转为MapList  自动生成，请勿修改-->
+    <select id="selectListForMapSet" resultMap="BaseResultMap" >
+        SELECT /*MS-MY-TEST-TABLE-SELECTLISTFORMAPSET*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </select>
+
+    <!--分页查询 pageCount  自动生成，请勿修改-->
+    <select id="queryForPageCount"  resultType="int">
+        SELECT
+          COUNT(*) AS total 
+        FROM
+ my_test_table
+        where
+          NAME            = #{name,jdbcType=VARCHAR}
+        
+    </select>
+    <!--分页查询 pageResult  自动生成，请勿修改-->
+    <select id="queryForPageResult"  resultMap="BaseResultMap">
+        SELECT /*MS-MY-TEST-TABLE-QUERYFORPAGE*/  <include refid="Base_Column_List" />
+        FROM my_test_table
+        where
+          NAME            = #{name,jdbcType=VARCHAR}
+        order by id desc
+        limit #{startRow},#{limit}
+    </select>
+</mapper>

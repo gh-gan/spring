@@ -1,0 +1,136 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="my_test_table" physicalName="my_test_table" remark="MY_TEST_TABLE">
+
+    <!--  特殊字符说明 &lt;&gt; <> -->
+
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,LONGID,NAME,AGE
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.LONGID,sf.NAME,sf.AGE
+    </sql>
+
+    <!-- 插入模板 -->
+    <operation name="insert" paramtype="object" remark="插入表:my_test_table" autoGen="true">
+            <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+                SELECT
+                LAST_INSERT_ID()
+            </selectKey>
+            <![CDATA[
+            INSERT INTO my_test_table(
+                    ID
+                    ,LONGID
+                    ,NAME
+                    ,AGE
+            )VALUES(
+                     null
+                    , #{longid,jdbcType=BIGINT}
+                    , #{name,jdbcType=VARCHAR}
+                    , #{age,jdbcType=INTEGER}
+            )
+            ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:my_test_table"  autoGen="true">
+            INSERT INTO my_test_table(
+                    ID
+                    ,LONGID
+                    ,NAME
+                    ,AGE
+            )VALUES
+            <foreach collection="list"  item="item" separator=",">
+                (
+                     null
+                    , #{item.longid,jdbcType=BIGINT}
+                    , #{item.name,jdbcType=VARCHAR}
+                    , #{item.age,jdbcType=INTEGER}
+                )
+            </foreach>
+    </operation>
+
+    <!-- 更新  -->
+    <operation name="update" paramtype="object" remark="更新表:my_test_table"  autoGen="true">
+        <![CDATA[
+        UPDATE my_test_table
+        SET
+            LONGID          = #{longid,jdbcType=BIGINT}
+            ,NAME            = #{name,jdbcType=VARCHAR}
+            ,AGE             = #{age,jdbcType=INTEGER}
+        WHERE
+            ID              = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- 删除  -->
+    <operation name="deleteById"  remark="根据主键删除数据:my_test_table">
+        <![CDATA[
+        DELETE FROM my_test_table
+        WHERE
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- select 一条 -->
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:my_test_table">
+        SELECT *
+        FROM my_test_table
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- select 多条,  paramtype=object时接口参数为DO对象，为primitive时为参数为sql中对应的参数，为primitive时可不写paramtype -->
+    <operation name="selectList" multiplicity="many" paramtype="object" remark="查询多条">
+        SELECT *
+        FROM my_test_table
+        WHERE
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- 返回Map<kev,value>结构  值：Map<id,List<name>>,  mapK,mapV是代码中用于获取存放在Map中使用的字段-->
+    <operation name="selectListToMap" multiplicity="many" paramtype="object" kvmap="true" mapK="id" mapV="name" remark="查询结果多条并转为Map">
+        SELECT *
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- 返回Map<kev,List<value>>结构 值：Map<id,List<name>> -->
+    <operation name="selectListForMapList" multiplicity="many" paramtype="primitive" kvmap="list" mapK="id" mapV="name" remark="查询结果多条并转为MapList">
+        SELECT *
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- 返回Map<kev,Set<value>>结构 值：Map<id,Set<name>> -->
+    <operation name="selectListForMapSet" multiplicity="many" paramtype="primitive" kvmap="set" mapK="id" mapV="name" remark="查询结果多条并转为MapList">
+        SELECT *
+        FROM my_test_table
+        <![CDATA[
+             AGE > #{age,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <!-- 分页查询， name为查询条件，TestPageVo为返回分页信息封装的对象，查询条件也会封装进来 -->
+    <operation name="queryForPage" multiplicity="paging" paging="TestPageVo" paramtype="primitive" remark="分页查询">
+        SELECT *
+        FROM my_test_table
+        where
+          NAME            = #{name,jdbcType=VARCHAR}
+        order by id desc
+    </operation>
+
+
+
+</table>

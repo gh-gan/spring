@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ============================================================== -->
+<!-- Master configuration file for auto-generation of dal. -->
+<!-- ============================================================== -->
+
+<config>
+    <!-- ========================================================== -->
+    <!-- The typemap("Type Map") maps from one java type to another -->
+    <!-- java type. If you feel the original sql data type to java -->
+    <!-- type mapping is not satisfactory, you can use typemap to -->
+    <!-- convert it to a more appropriate one. -->
+    <!-- ========================================================== -->
+    <typemap from="java.sql.Date" to="java.util.Date"/>
+    <typemap from="java.sql.Time" to="java.util.Date"/>
+    <typemap from="java.sql.Timestamp" to="java.util.Date"/>
+    <typemap from="java.math.BigDecimal" to="Long"/>
+    <typemap from="byte" to="int"/>
+    <typemap from="short" to="int"/>
+
+    <!-- ========================================================== -->
+    <!-- datasource config  可以配置多个-->
+    <!-- database name 自定义-->
+    <!-- ========================================================== -->
+    <!-- -->
+    <database name="testdb" class="org.gjt.mm.mysql.Driver" type="mysql">
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/testdb?useSSL=false"/>
+        <property name="userid" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="schema" value="testdb"/>
+    </database>
+
+    <!-- ========database.name pom.xml中的值========================= -->
+    <!-- 支持根据不同database单独配置，在使用了${database.name}的情况下无需配置多个 -->
+    <!--database="fbi" 此参数可选，多数据源时如果不使用此参数则为通用-->
+    <package value="dal.testdb.auto" >   <!-- 代码产生后存放的代码路径，根文件名在pox.xml中配置  项目/根文件名/代码路径 -->
+        <subClass name="dal" value="dal"/>
+        <subClass name="mapper" value="mapper"/>
+        <subClass name="mapper.xml" value="/mapper.testdb.auto"/> <!-- 绝对路径，mapper.xml存放子目录 -->
+        <subClass name="paging" value="paging"/>    <!-- 生成的paging存放子目录 -->
+        <subClass name="dao" value="dao"/>      <!-- 生成的dao存放子目录 -->
+        <subClass name="dataobject" value="dataobject"/>   <!-- 生成的DO存放子目录 -->
+        <subClass name="resultmap" value="resultmap"/>  <!-- 生成的resultmap存放子目录 -->
+    </package>
+
+    <!-- 使用 database="dbName2" 进行多数据源配置 -->
+<!--    <package value="cn.dalgen.dal.${database.name}" database="dbName2">-->
+<!--        <subClass name="dal" value="dal"/>-->
+<!--        <subClass name="mapper" value="mapper"/>-->
+<!--        <subClass name="mapper.xml" value="/mappers.${database.name}"/>&lt;!&ndash; 绝对路径 &ndash;&gt;-->
+<!--        <subClass name="paging" value="paging"/>-->
+<!--        <subClass name="dao" value="dao"/>-->
+<!--        <subClass name="dataobject" value="dataobject"/>-->
+<!--        <subClass name="resultmap" value="resultmap"/>-->
+<!--    </package>-->
+    <!-- ========================================================== -->
+
+    <!--分库分表规则  分表后缀 支持多个-->
+    <splitTableSuffixs>
+        <splitTableSuffix value="_000"/>
+    </splitTableSuffixs>
+
+    <!-- 表名前缀省略  按database分，支持多个 -->
+    <!-- 如 my_dalgen 表,想忽略前缀 "my_", 不配置会按表全名生成代码名
+         效果： -> DAO:DalgenDAO.java ,默认为 MyDalgen.java -->
+    <tablePrefixs database="testdb">
+        <!-- 支持多个前缀配置，多个时，value值长的放前面-->
+<!--    <tablePrefix value="longvalue_" replace=""/>    -->
+        <tablePrefix value="my_" replace=""/>
+    </tablePrefixs>
+
+    <!-- 表名前缀省略  按database分，支持多个 -->
+<!--    <tablePrefixs database="testdb2">-->
+<!--        &lt;!&ndash;长的放前面&ndash;&gt;-->
+<!--        <tablePrefix value="db2_pre_" replace=""/>-->
+<!--        <tablePrefix value="pre_"/>-->
+<!--    </tablePrefixs>-->
+
+    <!-- 索引省略前置 支持多个 -->
+    <!-- 索引前缀省略，初始化SQL模板时生效,建议先设计好表结构，规划好索引，这样就能够再初始化时初始化好对应的sql语句 -->
+    <indexPrefixs>
+        <!--value长的放前面-->
+        <indexPrefix value="idx_"/>
+        <indexPrefix value="uk_" replace=""/>
+    </indexPrefixs>
+
+    <!-- 软删除字段 软删除存在唯一约束问题,如果defVal为数字 则当前数字为未删除,大于此数字为删除,为数值是delVal不生效-->
+    <softDelete cloumn="is_deleted" defVal="N" delVal="Y"/>
+
+    <!-- 扩展参数，自定义模板时扩展支持 -->
+    <!-- 使用语法 ${dalgen.config.getExtParam("Repository")} -->
+    <extParams>
+        <extParam name="Repository" value="true"/>
+        <!-- insert update delete 返回结果 -->
+        <extParam name="IUD" value="Long"/>
+        <!-- DOMapp name中默认出现DO，如需不出现则将DO去掉即可  -->
+        <extParam name="DoMapperName" value="DO"/>
+        <!--默认DAO中方法参数排序，设定为false时与xml模板中顺序一致-->
+        <extParam name="MethodParamSort" value="true"/>
+    </extParams>
+</config>
